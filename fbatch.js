@@ -73,6 +73,65 @@ function clear(src) {
   }, null)
 }
 
+// 运行时主函数
+// 命令文本
+var com = {
+  copy: 'copy',
+  clear: 'clear'
+}
+
+// 外部config文件
+var config = null
+
+!(function () {
+  var help = [
+    `${com.copy} <src> <dist>     复制src目录下所有内容至dist目录\r\n`,
+    `${com.copy} -conf <config>   按照指定config文件操作\r\n`,
+    `${com.clear} <src>           删除指定目录下所有内容，不会删除目录本身\r\n`,
+    `${com.clear} -conf <config>  按照指定config文件操作\r\n`
+  ]
+  if (typeof process.argv[2] === 'undefined') {
+    console.log(`可使用的操作: \r\n`)
+    help.forEach(text => console.log(text))
+  } else {
+    switch(process.argv[2]) {
+      case com.copy:
+        if (process.argv[3] && process.argv[4]) {
+          if (process.argv[3] === '-conf') {
+            config = require(process.argv[4])
+            copy(config.copySrc, config.copyDest)
+          } else {
+            copy(process.argv[3], process.argv[4])
+          }
+        } else {
+          console.log(`用法：\r\n${help[0]}${help[1]}`)
+        }
+        break
+      case com.clear:
+        if (process.argv[3]) {
+          if (process.argv[3] === '-conf') {
+            if (process.argv[4]) {
+              config = require(process.argv[4])
+              clear(config.clearSrc)
+            } else {
+              console.log(`用法：\r\n${help[2]}${help[3]}`)
+            }
+          } else {
+            clear(process.argv[3])
+          }
+        } else {
+          console.log(`用法：\r\n${help[2]}${help[3]}`)
+        }
+        break
+      default:
+        console.log(`可使用的操作: \r\n`)
+        help.forEach(text => console.log(text))
+        break
+    }
+  }
+})()
+
+
 module.exports = {
   traversal: traversal,
   copy: copy,
