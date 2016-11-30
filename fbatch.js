@@ -39,13 +39,11 @@ function copy (src, dest) {
     if (fs.statSync(pathname).isFile()) {
       // 如果原路径是文件，直接复制
       console.log(`正在复制文件${destPath} ...`)
-
-      // 如果复制的源对象就是文件，那么把文件名提取出来放到destPath最后
-      // 因为这种情况下destPath 返回的是此文件所在的文件夹
-      if (src === pathname) fs.writeFileSync(path.join(destPath, path.basename(src)))
-
-      // 否则正常写文件
-      else fs.writeFileSync(destPath)
+      if (src === pathname) {
+        fs.writeFileSync(path.join(destPath, path.basename(src)), fs.readFileSync(path.resolve(pathname)))
+      } else {
+        fs.writeFileSync(path.join(destPath), fs.readFileSync(path.resolve(pathname)))
+      }
     } else {
       // 如果原路径是文件夹，检测是否在目标路径存在
       // 若不存在则新建文件夹，否则不做任何事情
@@ -55,8 +53,7 @@ function copy (src, dest) {
         if (err.code === 'ENOENT') {
           console.log(`正在创建文件夹${destPath} ...`)
           fs.mkdirSync(destPath)
-        }
-        else console.error(err)
+        } else console.error(err)
       }
     }
   }
