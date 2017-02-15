@@ -11,4 +11,4 @@ console.log('遍历完成')
 fbatch.copy('./test/src', './test/dest')
 
 // 测试 clear 方法
-fbatch.clear('./test/dest')
+// fbatch.clear('./test/dest')
